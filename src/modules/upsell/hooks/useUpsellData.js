@@ -14,6 +14,7 @@ const useUpsellData = () => {
   const [recommendedServices, setRecommendedServices] = useState([]);
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [newlyLoaded, setNewlyLoaded] = useState(false);
   const [filterOptions, setFilterOptions] = useState({
     industry: 'All',
     currentService: 'All',
@@ -94,6 +95,9 @@ const useUpsellData = () => {
       const filtered = filterOpportunities(data, filterOptions);
       setOpportunities(filtered);
       
+      // Set the newly loaded flag to true
+      setNewlyLoaded(true);
+      
       console.log('Sample data processed successfully');
     } catch (error) {
       console.error('Error loading sample data:', error);
@@ -126,6 +130,11 @@ const useUpsellData = () => {
     setSelectedOpportunity(opportunity);
   };
   
+  // Reset the newly loaded flag
+  const clearNewlyLoaded = () => {
+    setNewlyLoaded(false);
+  };
+  
   // Apply filters whenever they change
   useEffect(() => {
     if (customers.length > 0) {
@@ -151,9 +160,11 @@ const useUpsellData = () => {
     loading,
     filterOptions,
     processingSteps,
+    newlyLoaded,
     loadData,
     updateFilters,
-    selectOpportunity
+    selectOpportunity,
+    clearNewlyLoaded
   };
 };
 
