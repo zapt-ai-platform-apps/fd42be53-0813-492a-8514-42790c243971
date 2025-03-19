@@ -1,7 +1,7 @@
 {
-    "name": "reactjs-vite-tailwind-vercel",
+    "name": "itd-global-upsell-opportunity-analyzer",
     "version": "1.0.0",
-    "description": "ReactJS app with Vite, Tailwind",
+    "description": "ITD Global Upsell Opportunity Analyzer - identifies high-potential upselling opportunities",
     "type": "module",
     "scripts": {
         "dev": "vite",
@@ -11,8 +11,12 @@
     },
     "dependencies": {
         "@sentry/browser": "^8.41.0",
+        "chart.js": "^4.4.0",
         "react": "^18.2.0",
-        "react-dom": "^18.2.0"
+        "react-chartjs-2": "^5.2.0",
+        "react-dom": "^18.2.0",
+        "react-icons": "^4.11.0",
+        "papaparse": "^5.4.1"
     },
     "devDependencies": {
         "@vitejs/plugin-react": "^4.3.4",
