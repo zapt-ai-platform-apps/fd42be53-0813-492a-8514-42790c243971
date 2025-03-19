@@ -16,6 +16,7 @@ export default function App() {
     selectedOpportunity,
     loading,
     filterOptions,
+    processingSteps,
     loadData,
     updateFilters,
     selectOpportunity
@@ -55,8 +56,12 @@ export default function App() {
       <main className="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="space-y-6">
           <div className="grid grid-cols-1 gap-6">
-            {/* Data Upload Panel */}
-            <DataUpload onLoadSampleData={loadData} loading={loading} />
+            {/* Data Upload Panel with LLM explanation */}
+            <DataUpload 
+              onLoadSampleData={loadData} 
+              loading={loading}
+              processingSteps={processingSteps}
+            />
             
             {/* Filter Panel */}
             <FilterPanel
@@ -94,8 +99,7 @@ export default function App() {
         <div className="container mx-auto">
           <div className="text-center text-sm text-gray-500">
             <p className="mb-2">
-              This demo uses static sample data. A production version would analyze actual customer shipping patterns, 
-              compare against industry benchmarks, and generate tailored recommendations. 
+              This demo uses static sample data to simulate AI-powered analysis. A production version would process actual customer data through our LLM to generate tailored recommendations. 
               No customer data is used in this demonstration.
             </p>
             <div className="flex justify-center items-center">

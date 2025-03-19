@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { loadSampleData, filterOpportunities, getUniqueIndustries, getUniqueCurrentServices, getUniqueRecommendedServices } from '@/modules/data/dataUtils';
 
 /**
@@ -21,12 +21,67 @@ const useUpsellData = () => {
     sortBy: 'priority'
   });
   
-  // Load sample data
-  const loadData = () => {
+  // Track processing steps for visual feedback
+  const processingSteps = useRef({
+    current: false,
+    progress: 0,
+    message: ''
+  });
+
+  // Simulate AI processing with visual feedback
+  const simulateProcessing = async (data) => {
+    const steps = [
+      { message: "Analyzing customer data using AI...", duration: 800 },
+      { message: "Identifying upsell patterns...", duration: 1200 },
+      { message: "Generating recommendations...", duration: 1000 },
+      { message: "Calculating potential revenue impact...", duration: 700 },
+      { message: "Finalizing results...", duration: 500 }
+    ];
+    
+    processingSteps.current = {
+      current: true,
+      progress: 0,
+      message: steps[0].message
+    };
+    
+    let totalDuration = steps.reduce((acc, step) => acc + step.duration, 0);
+    let elapsed = 0;
+    
+    for (let i = 0; i < steps.length; i++) {
+      const step = steps[i];
+      processingSteps.current = {
+        current: true,
+        progress: Math.round((elapsed / totalDuration) * 100),
+        message: step.message
+      };
+      
+      await new Promise(resolve => setTimeout(resolve, step.duration));
+      elapsed += step.duration;
+    }
+    
+    processingSteps.current = {
+      current: true,
+      progress: 100,
+      message: "Analysis complete!"
+    };
+    
+    // Delay final completion
+    await new Promise(resolve => setTimeout(resolve, 500));
+    processingSteps.current = { current: false };
+    
+    return data;
+  };
+  
+  // Load sample data with simulated AI processing
+  const loadData = async () => {
     setLoading(true);
     try {
-      console.log('Loading sample data...');
+      console.log('Loading sample data and simulating AI processing...');
       const data = loadSampleData();
+      
+      // Simulate AI processing
+      await simulateProcessing(data);
+      
       setCustomers(data);
       
       // Extract unique values for filter dropdowns
@@ -38,7 +93,7 @@ const useUpsellData = () => {
       const filtered = filterOpportunities(data, filterOptions);
       setOpportunities(filtered);
       
-      console.log('Sample data loaded successfully');
+      console.log('Sample data processed successfully');
     } catch (error) {
       console.error('Error loading sample data:', error);
     } finally {
@@ -79,6 +134,7 @@ const useUpsellData = () => {
     selectedOpportunity,
     loading,
     filterOptions,
+    processingSteps,
     loadData,
     updateFilters,
     selectOpportunity

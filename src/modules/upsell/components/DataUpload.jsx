@@ -1,17 +1,17 @@
 import React from 'react';
-import { FiUploadCloud, FiDatabase } from 'react-icons/fi';
+import { FiUploadCloud, FiDatabase, FiZap } from 'react-icons/fi';
 
 /**
  * Component for the data upload interface
  * @param {Object} props - Component properties
  * @param {Function} props.onLoadSampleData - Function to load sample data
  * @param {Boolean} props.loading - Loading state
+ * @param {Object} props.processingSteps - Current processing state
  * @returns {JSX.Element} - Rendered component
  */
-const DataUpload = ({ onLoadSampleData, loading }) => {
+const DataUpload = ({ onLoadSampleData, loading, processingSteps }) => {
   const handleFileChange = (e) => {
     // In a real implementation this would parse the CSV
-    // For this demo, we'll just show an alert
     alert('This demo uses pre-loaded sample data only. File upload would be implemented in production.');
   };
 
@@ -21,8 +21,30 @@ const DataUpload = ({ onLoadSampleData, loading }) => {
       
       <div className="mb-6">
         <p className="text-gray-600 mb-4">
-          This demo uses pre-loaded sample data. In production, this interface would accept weekly anonymized customer data exports.
+          This demo simulates an LLM-powered recommendation engine that analyzes customer data to identify upsell opportunities.
         </p>
+        
+        <div className="bg-gray-50 p-4 rounded-lg mb-4">
+          <h3 className="text-md font-medium text-gray-900 mb-2">How This Works:</h3>
+          <ol className="text-sm text-gray-600 space-y-2 list-decimal pl-5">
+            <li>You upload anonymized customer data</li>
+            <li>Our AI analyzes shipping patterns and service utilization</li>
+            <li>The system identifies underserved needs based on industry patterns</li>
+            <li>Recommendations are generated with potential revenue impact</li>
+            <li>Results are displayed in order of opportunity size</li>
+          </ol>
+        </div>
+        
+        <div className="bg-gray-50 p-4 rounded-lg mb-4">
+          <h3 className="text-md font-medium text-gray-900 mb-2">Key Benefits:</h3>
+          <ul className="text-sm text-gray-600 space-y-2 list-disc pl-5">
+            <li><span className="font-medium">No pre-processing required:</span> ITD only needs to export basic data</li>
+            <li><span className="font-medium">Privacy preserved:</span> All processing happens within the app, using only anonymized data</li>
+            <li><span className="font-medium">Intelligence in the app:</span> The recommendation intelligence comes from the LLM integration</li>
+            <li><span className="font-medium">Up-to-date insights:</span> Each new upload generates fresh recommendations based on current data</li>
+            <li><span className="font-medium">Zero configuration:</span> No need to set up complex rules or algorithms on ITD's side</li>
+          </ul>
+        </div>
         
         {/* File upload area (for display only) */}
         <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
@@ -52,9 +74,28 @@ const DataUpload = ({ onLoadSampleData, loading }) => {
           disabled={loading}
         >
           <FiDatabase className="mr-2" />
-          {loading ? 'Loading...' : 'Load Sample Data'}
+          {loading ? 'Processing...' : 'Load Sample Data'}
         </button>
       </div>
+      
+      {/* Processing steps */}
+      {processingSteps && processingSteps.current && (
+        <div className="mt-4 p-4 bg-itd-teal bg-opacity-5 rounded-lg">
+          <div className="flex items-center mb-2">
+            <FiZap className="mr-2 text-itd-teal" />
+            <h3 className="text-md font-medium text-itd-navy">AI Processing</h3>
+          </div>
+          <p className="text-sm text-itd-teal-dark font-medium">
+            {processingSteps.message}
+          </p>
+          <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+            <div
+              className="bg-itd-teal h-2 rounded-full transition-all duration-500"
+              style={{ width: `${processingSteps.progress}%` }}
+            ></div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
