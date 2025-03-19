@@ -1,17 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FiRefreshCw, FiMenu, FiX } from 'react-icons/fi';
+import { FiMenu, FiX } from 'react-icons/fi';
 
 const Header = () => {
-  const [currentDate] = useState(new Date());
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
-  
-  // Format refresh date
-  const formattedDate = new Intl.DateTimeFormat('en-GB', {
-    dateStyle: 'medium',
-    timeStyle: 'short'
-  }).format(currentDate);
   
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -32,7 +25,7 @@ const Header = () => {
           </button>
         </div>
         
-        {/* Navigation */}
+        {/* Navigation - moved to the right */}
         <nav className={`${mobileMenuOpen ? 'block' : 'hidden'} sm:block mt-4 sm:mt-0`}>
           <ul className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-6">
             <li>
@@ -61,11 +54,6 @@ const Header = () => {
             </li>
           </ul>
         </nav>
-        
-        <div className="mt-2 sm:mt-0 flex items-center text-itd-yellow text-sm">
-          <FiRefreshCw className="mr-2" />
-          <span>Refreshed weekly | Last update: {formattedDate}</span>
-        </div>
       </div>
     </header>
   );

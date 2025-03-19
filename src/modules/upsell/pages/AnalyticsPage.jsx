@@ -3,13 +3,19 @@ import { Navigate } from 'react-router-dom';
 import VisualizationsPanel from '@/modules/upsell/components/VisualizationsPanel';
 import OpportunityTable from '@/modules/upsell/components/OpportunityTable';
 import DetailView from '@/modules/upsell/components/DetailView';
+import FilterPanel from '@/modules/upsell/components/FilterPanel';
 import { useUpsellContext } from '@/modules/upsell/providers/UpsellDataProvider';
 
 const AnalyticsPage = () => {
   const {
     opportunities,
     selectedOpportunity,
-    selectOpportunity
+    selectOpportunity,
+    industries,
+    currentServices,
+    recommendedServices,
+    filterOptions,
+    updateFilters
   } = useUpsellContext();
 
   // Redirect to home if no data is loaded
@@ -24,6 +30,15 @@ const AnalyticsPage = () => {
 
   return (
     <div className="space-y-6">
+      {/* Filters Panel */}
+      <FilterPanel
+        filters={filterOptions}
+        onFilterChange={updateFilters}
+        industries={industries}
+        currentServices={currentServices}
+        recommendedServices={recommendedServices}
+      />
+      
       {/* Visualizations Panel */}
       <VisualizationsPanel opportunities={opportunities} />
       
