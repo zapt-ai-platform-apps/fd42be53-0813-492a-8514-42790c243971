@@ -1,4 +1,5 @@
 import sampleData from './sampleData';
+import * as Sentry from '@sentry/browser';
 
 /**
  * Calculate priority score based on revenue potential and confidence
@@ -90,55 +91,71 @@ export const getTopOpportunitiesByRevenue = (customers, limit = 15) => {
  * @returns {Array} - Filtered opportunities with customer info
  */
 export const filterOpportunities = (customers, filters) => {
-  // Create flat list of opportunities with customer info
-  let opportunities = customers.flatMap(customer => {
-    return customer.upsellOpportunities.map(opportunity => ({
-      customerId: customer.id,
-      industry: customer.industry,
-      currentServices: customer.currentServices,
-      monthlyVolume: customer.monthlyVolume,
-      currentMonthlyRevenue: customer.currentMonthlyRevenue,
-      commonDestinations: customer.commonDestinations,
-      timeAsCustomer: customer.timeAsCustomer,
-      ...opportunity,
-      priorityScore: calculatePriorityScore(opportunity)
-    }));
-  });
-  
-  // Apply industry filter
-  if (filters.industry && filters.industry !== 'All') {
-    opportunities = opportunities.filter(opp => opp.industry === filters.industry);
+  try {
+    // Create flat list of opportunities with customer info
+    let opportunities = customers.flatMap(customer => {
+      return customer.upsellOpportunities.map(opportunity => ({
+        customerId: customer.id,
+        industry: customer.industry,
+        currentServices: customer.currentServices,
+        monthlyVolume: customer.monthlyVolume,
+        currentMonthlyRevenue: customer.currentMonthlyRevenue,
+        commonDestinations: customer.commonDestinations,
+        timeAsCustomer: customer.timeAsCustomer,
+        ...opportunity,
+        priorityScore: calculatePriorityScore(opportunity)
+      }));
+    });
+    
+    // Debug log initial count
+    console.log(`Initial opportunities count: ${opportunities.length}`);
+    
+    // Apply industry filter
+    if (filters.industry && filters.industry !== 'All') {
+      opportunities = opportunities.filter(opp => opp.industry === filters.industry);
+      console.log(`After industry filter (${filters.industry}): ${opportunities.length} opportunities`);
+    }
+    
+    // Apply current service filter
+    if (filters.currentService && filters.currentService !== 'All') {
+      opportunities = opportunities.filter(opp => 
+        Array.isArray(opp.currentServices) && 
+        opp.currentServices.includes(filters.currentService)
+      );
+      console.log(`After current service filter (${filters.currentService}): ${opportunities.length} opportunities`);
+    }
+    
+    // Apply recommended service filter
+    if (filters.recommendedService && filters.recommendedService !== 'All') {
+      opportunities = opportunities.filter(opp => opp.service === filters.recommendedService);
+      console.log(`After recommended service filter (${filters.recommendedService}): ${opportunities.length} opportunities`);
+    }
+    
+    // Apply minimum revenue filter
+    if (filters.minRevenue && filters.minRevenue > 0) {
+      opportunities = opportunities.filter(opp => 
+        opp.potentialRevenueIncrease >= filters.minRevenue
+      );
+      console.log(`After min revenue filter (${filters.minRevenue}): ${opportunities.length} opportunities`);
+    }
+    
+    // Apply sort
+    if (filters.sortBy === 'revenue') {
+      opportunities.sort((a, b) => b.potentialRevenueIncrease - a.potentialRevenueIncrease);
+    } else if (filters.sortBy === 'confidence') {
+      opportunities.sort((a, b) => b.confidenceScore - a.confidenceScore);
+    } else if (filters.sortBy === 'priority') {
+      opportunities.sort((a, b) => b.priorityScore - a.priorityScore);
+    }
+    
+    console.log(`Returning ${opportunities.length} filtered opportunities`);
+    return opportunities;
+  } catch (error) {
+    console.error('Error in filterOpportunities:', error);
+    Sentry.captureException(error);
+    // Return empty array as fallback to prevent app crash
+    return [];
   }
-  
-  // Apply current service filter
-  if (filters.currentService && filters.currentService !== 'All') {
-    opportunities = opportunities.filter(opp => 
-      opp.currentServices.includes(filters.currentService)
-    );
-  }
-  
-  // Apply recommended service filter
-  if (filters.recommendedService && filters.recommendedService !== 'All') {
-    opportunities = opportunities.filter(opp => opp.service === filters.recommendedService);
-  }
-  
-  // Apply minimum revenue filter
-  if (filters.minRevenue && filters.minRevenue > 0) {
-    opportunities = opportunities.filter(opp => 
-      opp.potentialRevenueIncrease >= filters.minRevenue
-    );
-  }
-  
-  // Apply sort
-  if (filters.sortBy === 'revenue') {
-    opportunities.sort((a, b) => b.potentialRevenueIncrease - a.potentialRevenueIncrease);
-  } else if (filters.sortBy === 'confidence') {
-    opportunities.sort((a, b) => b.confidenceScore - a.confidenceScore);
-  } else if (filters.sortBy === 'priority') {
-    opportunities.sort((a, b) => b.priorityScore - a.priorityScore);
-  }
-  
-  return opportunities;
 };
 
 /**

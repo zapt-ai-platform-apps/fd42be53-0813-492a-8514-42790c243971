@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { loadSampleData, filterOpportunities, getUniqueIndustries, getUniqueCurrentServices, getUniqueRecommendedServices } from '@/modules/data/dataUtils';
+import * as Sentry from '@sentry/browser';
 
 /**
  * Custom hook for managing upsell data state and operations
@@ -96,6 +97,7 @@ const useUpsellData = () => {
       console.log('Sample data processed successfully');
     } catch (error) {
       console.error('Error loading sample data:', error);
+      Sentry.captureException(error);
     } finally {
       setLoading(false);
     }
@@ -107,8 +109,15 @@ const useUpsellData = () => {
     setFilterOptions(updatedFilters);
     
     if (customers.length > 0) {
-      const filtered = filterOpportunities(customers, updatedFilters);
-      setOpportunities(filtered);
+      console.log('Applying filters:', updatedFilters);
+      try {
+        const filtered = filterOpportunities(customers, updatedFilters);
+        console.log(`Found ${filtered.length} opportunities matching filters`);
+        setOpportunities(filtered);
+      } catch (error) {
+        console.error('Error applying filters:', error);
+        Sentry.captureException(error);
+      }
     }
   };
   
@@ -120,8 +129,15 @@ const useUpsellData = () => {
   // Apply filters whenever they change
   useEffect(() => {
     if (customers.length > 0) {
-      const filtered = filterOpportunities(customers, filterOptions);
-      setOpportunities(filtered);
+      try {
+        console.log('Filters changed, updating opportunities');
+        const filtered = filterOpportunities(customers, filterOptions);
+        console.log(`Found ${filtered.length} opportunities after filter change`);
+        setOpportunities(filtered);
+      } catch (error) {
+        console.error('Error applying filters in useEffect:', error);
+        Sentry.captureException(error);
+      }
     }
   }, [filterOptions, customers]);
   

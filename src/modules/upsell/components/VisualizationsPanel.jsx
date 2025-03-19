@@ -10,11 +10,11 @@ import IndustryChart from './visualizations/IndustryChart';
  * @returns {JSX.Element} - Rendered component
  */
 const VisualizationsPanel = ({ opportunities }) => {
-  if (opportunities.length === 0) {
+  if (!opportunities || opportunities.length === 0) {
     return (
       <div className="bg-white p-6 rounded-lg shadow-md text-center">
         <p className="text-gray-500">
-          Load sample data to view visualizations
+          No data available for visualization
         </p>
       </div>
     );
