@@ -1,5 +1,6 @@
 import React from 'react';
-import { FiUploadCloud, FiDatabase, FiZap } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
+import { FiUploadCloud, FiDatabase, FiZap, FiInfo } from 'react-icons/fi';
 
 /**
  * Component for the data upload interface
@@ -15,6 +16,9 @@ const DataUpload = ({ onLoadSampleData, loading, processingSteps }) => {
     alert('This demo uses pre-loaded sample data only. File upload would be implemented in production.');
   };
 
+  // Check if the progress bar should be shown
+  const showProgressBar = loading && processingSteps?.current === true;
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold text-itd-navy mb-4">Data Source</h2>
@@ -27,7 +31,16 @@ const DataUpload = ({ onLoadSampleData, loading, processingSteps }) => {
         <div className="bg-gray-50 p-4 rounded-lg mb-4">
           <h3 className="text-md font-medium text-gray-900 mb-2">How This Works:</h3>
           <ol className="text-sm text-gray-600 space-y-2 list-decimal pl-5">
-            <li>You upload anonymized customer data</li>
+            <li>
+              You upload anonymized customer data
+              <Link 
+                to="/data-explanation" 
+                className="inline-flex items-center ml-2 text-itd-teal hover:text-itd-teal-dark"
+              >
+                <FiInfo size={14} className="mr-1" />
+                <span className="text-xs">Learn more</span>
+              </Link>
+            </li>
             <li>Our AI analyzes shipping patterns and service utilization</li>
             <li>The system identifies underserved needs based on industry patterns</li>
             <li>Recommendations are generated with potential revenue impact</li>
@@ -78,8 +91,8 @@ const DataUpload = ({ onLoadSampleData, loading, processingSteps }) => {
         </button>
       </div>
       
-      {/* Processing steps */}
-      {processingSteps && processingSteps.current && (
+      {/* Processing steps - only shown when loading */}
+      {showProgressBar && (
         <div className="mt-4 p-4 bg-itd-teal bg-opacity-5 rounded-lg">
           <div className="flex items-center mb-2">
             <FiZap className="mr-2 text-itd-teal" />
